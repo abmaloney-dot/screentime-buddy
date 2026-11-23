@@ -54,6 +54,52 @@ full for them). `scripts/android-env.ps1` points the tools there for one PowerSh
 
 On an emulator there's little real usage at first. Use it for a while, or try it on a real phone.
 
+## Publishing the web demo on GitHub Pages
+
+Everything in the repo is ready; `.github/workflows/deploy-pages.yml` builds and publishes
+the site on every push to `master`. One-time setup:
+
+1. **Create a public repository** on GitHub (free Pages needs public). Any name works; the
+   site's path follows it automatically.
+2. **Sign in to GitHub from this computer** with the GitHub CLI:
+   ```powershell
+   winget install GitHub.cli
+   ```
+   ```powershell
+   gh auth login
+   ```
+3. **Push the project**, from the project folder. This creates the repo if it doesn't exist:
+   ```powershell
+   gh repo create screentime-buddy --public --source . --push
+   ```
+   (Already created it on github.com? Use `git remote add origin <repo URL>` then
+   `git push -u origin master` instead.)
+4. **Turn Pages on:** repo **Settings → Pages → Build and deployment → Source: GitHub Actions**.
+   If the first workflow run happened before this, re-run it from the **Actions** tab.
+5. After the **Deploy to GitHub Pages** run finishes, the site is at
+   `https://<your-username>.github.io/screentime-buddy/`.
+
+What visitors get: the full app with demo data, the **+1 day / +1 week** buttons, and their
+own private data stored in their browser. The first visit reloads once (see below). Note
+that a public repo makes everything in it public, including the background design images.
+
+How the build works (`npm run build:pages`):
+
+- `app.config.js` sets Expo's `baseUrl` from `EXPO_BASE_URL` (the workflow uses `/<repo>`).
+- `EXPO_PUBLIC_DEV_TOOLS=1` keeps the time-travel buttons in this release build.
+- `scripts/postbuild-pages.mjs` adds `404.html` (so links like `/theme` work), `.nojekyll`
+  (Expo's `_expo/` folder would otherwise be hidden), and loads `public/coi-serviceworker.js`:
+  expo-sqlite needs COOP/COEP headers that GitHub Pages can't send, so a service worker adds
+  them, reloading the page once on first visit. It is guarded against reload loops.
+
+To try the exact build locally (PowerShell):
+
+```powershell
+$env:EXPO_BASE_URL = "/screentime-buddy"; $env:EXPO_PUBLIC_DEV_TOOLS = "1"; npm run build:pages
+```
+
+Then serve `dist/` under `/screentime-buddy/` with any static server.
+
 ## How it fits together
 
 ```

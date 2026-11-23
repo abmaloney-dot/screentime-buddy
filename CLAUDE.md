@@ -119,6 +119,17 @@ requests (rapid day switching). Use it instead of ad-hoc effects.
 Path aliases: `@/*` → `src/*`, `@modules/*` → `modules/*`. Routes live in `src/app/`
 (Expo Router); non-route code stays outside it.
 
+## GitHub Pages build
+
+`npm run build:pages` (+ `EXPO_BASE_URL=/<repo>`, `EXPO_PUBLIC_DEV_TOOLS=1`) = `expo export -p web`
+then `scripts/postbuild-pages.mjs` (404.html for deep links, .nojekyll, injects
+`public/coi-serviceworker.js`). The service worker supplies the COOP/COEP headers expo-sqlite needs;
+it is configured for `require-corp` (Safari lacks `credentialless`) and guarded to register only
+under the base path and reload at most once per tab session — without those guards a page outside
+its scope reloads forever. Keep everything the app loads same-origin, or `require-corp` blocks it.
+`.github/workflows/deploy-pages.yml` deploys on push to master. Verified locally by serving
+`dist/` under `/screentime-buddy/` from a plain server with no special headers.
+
 ## Web preview notes
 
 - `metro.config.js` adds `.wasm` assets and COEP/COOP headers. expo-sqlite runs as WebAssembly

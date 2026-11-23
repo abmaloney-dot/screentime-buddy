@@ -7,8 +7,12 @@ import { deleteSimulatedFuture } from '@/lib/db';
 import { dayKey, startOfDay, startOfWeek } from '@/lib/time';
 import { makeStyles } from '@/theme';
 
+// Dev builds always show it; a release build only when built with
+// EXPO_PUBLIC_DEV_TOOLS=1 (the GitHub Pages demo, so visitors can skip weeks).
+const SHOW_DEV_TOOLS = __DEV__ || process.env.EXPO_PUBLIC_DEV_TOOLS === '1';
+
 /**
- * Developer-only time travel, shown in every tab header in dev builds.
+ * Developer time travel, shown in every tab header in dev builds and demos.
  * Skipping moves the app clock forward; the goal check and all screens react
  * as if that time had really passed.
  */
@@ -18,7 +22,7 @@ export function DevClockBar() {
   const [, rerender] = useState(0);
   useEffect(() => onClockChange(() => rerender((n) => n + 1)), []);
 
-  if (!__DEV__) return null;
+  if (!SHOW_DEV_TOOLS) return null;
 
   const offset = clock.offsetMs();
   const days = Math.round(offset / DAY_MS);
