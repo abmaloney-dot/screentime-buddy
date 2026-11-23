@@ -1,15 +1,34 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Button, Card, ProgressBar, Segmented, useSharedStyles } from '@/components/ui';
-import { ACCENTS, accentShades, makeStyles, spacing, useTheme, type AccentId, type ThemePreference } from '@/theme';
+import { Button, Card, ProgressBar, Segmented, useSharedStyles, ThemedSwitch } from '@/components/ui';
+import {
+  ACCENTS,
+  makeStyles,
+  paletteFor,
+  spacing,
+  useTheme,
+  type AccentId,
+  type Colors,
+  type ThemePreference,
+} from '@/theme';
 
 const ACCENT_IDS = Object.keys(ACCENTS) as AccentId[];
+
+/** The shades shown in the preview strip, lightest surface first. */
+const SHADES: { key: keyof Colors; label: string }[] = [
+  { key: 'background', label: 'Back' },
+  { key: 'card', label: 'Card' },
+  { key: 'border', label: 'Border' },
+  { key: 'primarySoft', label: 'Soft' },
+  { key: 'bar', label: 'Bars' },
+  { key: 'primary', label: 'Accent' },
+];
 
 export default function ThemeScreen() {
   const styles = useSharedStyles();
   const s = useStyles();
-  const { colors, scheme, preference, setPreference, accent, setAccent } = useTheme();
+  const { colors, scheme, preference, setPreference, accent, setAccent, tinted, setTinted } = useTheme();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -30,10 +49,11 @@ export default function ThemeScreen() {
         </Text>
       </Card>
 
-      <Card title="Accent colour">
+      <Card title="Colour theme">
         <View style={s.grid}>
           {ACCENT_IDS.map((id) => {
-            const shade = accentShades(id, scheme);
+            // Each tile is drawn in its own theme, so you see it before picking.
+            const p = paletteFor(id, scheme, tinted);
             const active = id === accent;
             return (
               <Pressable
@@ -42,21 +62,46 @@ export default function ThemeScreen() {
                 accessibilityRole="radio"
                 accessibilityState={{ selected: active }}
                 accessibilityLabel={ACCENTS[id].label}
-                style={[s.option, active && { borderColor: shade.primary, backgroundColor: shade.primarySoft }]}>
-                <View style={[s.swatch, { backgroundColor: shade.primary }]}>
-                  {active ? <Ionicons name="checkmark" size={20} color={shade.onPrimary} /> : null}
+                style={[
+                  s.option,
+                  { backgroundColor: p.background, borderColor: active ? p.primary : p.border },
+                  active && s.optionActive,
+                ]}>
+                <View style={[s.swatch, { backgroundColor: p.primary }]}>
+                  {active ? <Ionicons name="checkmark" size={20} color={p.onPrimary} /> : null}
                 </View>
-                <Text style={[s.optionLabel, active && { fontWeight: '700' }]} numberOfLines={1}>
+                <View style={s.dots}>
+                  {[p.card, p.primarySoft, p.bar].map((c, i) => (
+                    <View key={i} style={[s.dot, { backgroundColor: c, borderColor: p.border }]} />
+                  ))}
+                </View>
+                <Text style={[s.optionLabel, { color: p.text }, active && { fontWeight: '700' }]} numberOfLines={1}>
                   {ACCENTS[id].label}
                 </Text>
               </Pressable>
             );
           })}
         </View>
+        <View style={s.toggleRow}>
+          <View style={{ flex: 1 }}>
+            <Text style={[styles.body, { fontWeight: '700' }]}>Tint the whole app</Text>
+            <Text style={styles.muted}>
+              Backgrounds, cards and borders take the theme’s colour. Off: neutral greys with coloured accents.
+            </Text>
+          </View>
+          <ThemedSwitch value={tinted} onValueChange={setTinted} />
+        </View>
       </Card>
 
       <Card title="Preview">
-        <Text style={styles.body}>Buttons, progress and charts use your accent.</Text>
+        <View style={s.strip}>
+          {SHADES.map(({ key, label }) => (
+            <View key={key} style={s.shade}>
+              <View style={[s.shadeSwatch, { backgroundColor: colors[key] }]} />
+              <Text style={s.shadeLabel}>{label}</Text>
+            </View>
+          ))}
+        </View>
         <ProgressBar value={2} max={3} />
         <View style={s.bars}>
           {[0.35, 0.6, 0.45, 0.9, 0.7, 0.5, 0.8].map((h, i) => (
@@ -81,10 +126,17 @@ const useStyles = makeStyles((c) =>
       paddingVertical: spacing.md,
       borderRadius: 12,
       borderWidth: 2,
-      borderColor: c.border,
     },
+    optionActive: { borderWidth: 3 },
     swatch: { width: 40, height: 40, borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-    optionLabel: { fontSize: 13, color: c.text },
+    dots: { flexDirection: 'row', gap: 4 },
+    dot: { width: 12, height: 12, borderRadius: 6, borderWidth: 1 },
+    optionLabel: { fontSize: 13 },
+    toggleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.sm },
+    strip: { flexDirection: 'row', gap: 6 },
+    shade: { flex: 1, alignItems: 'center', gap: 4 },
+    shadeSwatch: { alignSelf: 'stretch', height: 36, borderRadius: 8, borderWidth: 1, borderColor: c.border },
+    shadeLabel: { fontSize: 11, color: c.muted },
     bars: { flexDirection: 'row', alignItems: 'flex-end', gap: 6, height: 64 },
     bar: { flex: 1, borderTopLeftRadius: 4, borderTopRightRadius: 4 },
   }),

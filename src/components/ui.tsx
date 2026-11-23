@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
+import { Pressable, StyleSheet, Switch, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
 import { makeStyles, spacing, useTheme } from '@/theme';
 
@@ -89,6 +89,26 @@ export function Segmented<T extends string | number>({
         );
       })}
     </View>
+  );
+}
+
+// Thumbs stay white on every theme, the usual switch convention.
+const THUMB = '#FFFFFF';
+// react-native-web colours an "on" thumb with its own web-only prop
+// (default teal) and ignores thumbColor; native uses thumbColor. Pass both.
+const webThumb = { activeThumbColor: THUMB } as object;
+
+/** A Switch in the theme's colours, the same on web and native. */
+export function ThemedSwitch({ value, onValueChange }: { value: boolean; onValueChange: (v: boolean) => void }) {
+  const { colors } = useTheme();
+  return (
+    <Switch
+      value={value}
+      onValueChange={onValueChange}
+      trackColor={{ true: colors.primary, false: colors.border }}
+      thumbColor={THUMB}
+      {...webThumb}
+    />
   );
 }
 

@@ -90,9 +90,13 @@ simulated friends for now; a real one needs a backend. The Friends screen loads 
 only when `share_with_friends` is on, and ranks finished days only (on Monday: last week).
 
 **Theming: `src/theme.tsx`.** `ThemeProvider` (inside SQLiteProvider) picks a palette from
-mode (system/light/dark) × accent (`ACCENTS`: each has separate light and dark shades; pale
-accents use dark `onPrimary` text). Both choices live in `settings` and load in `onInit` to
-avoid a flash. Never import colours directly: module-level styles use
+mode (system/light/dark) × colour theme (`ACCENTS`) × tint on/off. A theme is a hue + saturation;
+`buildPalette` derives background, card, border, soft highlight, chart bars and tinted text from
+it with fixed lightness steps per mode (checked to keep text ≥ 4.5:1 on every surface; re-check if
+you change the steps). `primary`/`onPrimary` are hand-picked per mode (pale themes need dark
+button text); status colours (success/danger) never change. Tint off = neutral surfaces with
+the theme only on accents. All palettes are prebuilt in `PALETTES` so each has a stable identity.
+The choices live in `settings` and load in `onInit` to avoid a flash. Never import colours directly: module-level styles use
 `const useStyles = makeStyles((c) => StyleSheet.create({...}))`, shared ones
 `useSharedStyles()` from `components/ui.tsx`, inline colours `useTheme().colors`. Every
 `<Text>` style needs an explicit colour (unset = black, invisible in dark mode). The Theme tab
@@ -116,3 +120,7 @@ Path aliases: `@/*` → `src/*`, `@modules/*` → `modules/*`. Routes live in `s
   normalise line endings first.
 - React Native Web's `Switch` is a hidden checkbox under a drawn track: when driving the
   browser, click the visible track's coordinates; clicking the checkbox element does nothing.
+  Use `ThemedSwitch` (ui.tsx): on web an "on" thumb ignores `thumbColor` and needs the
+  web-only `activeThumbColor`, which it passes.
+- Browser-pane screenshots often lag a render behind; confirm state with page text or a
+  short wait before concluding a click failed.

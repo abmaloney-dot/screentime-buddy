@@ -1,7 +1,7 @@
 import { useSQLiteContext } from 'expo-sqlite';
-import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Card, useSharedStyles } from '@/components/ui';
+import { Card, useSharedStyles, ThemedSwitch } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { getSetting, setSetting } from '@/lib/db';
 import { friendsSource, SHARE_SETTING } from '@/lib/friends';
@@ -77,11 +77,7 @@ export default function FriendsScreen() {
               labels. Turn it off any time.
             </Text>
           </View>
-          <Switch
-            value={data?.sharing ?? false}
-            onValueChange={setSharing}
-            trackColor={{ true: colors.primary, false: colors.border }}
-          />
+          <ThemedSwitch value={data?.sharing ?? false} onValueChange={setSharing} />
         </View>
       </Card>
 

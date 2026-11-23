@@ -5,7 +5,9 @@ those hours ("Meal time", "Commute", …), get tips based on them, and pick a **
 goal** to cut screen time by 3, 5 or 10 % vs. last week. Reaching it earns a
 **hypothetical discount coupon** (gym, groceries, Amazon). An opt-in **friends
 leaderboard** compares daily averages. A **Theme** tab sets light/dark/system mode and
-an accent colour (purple, light pink, green, blue, light blue, teal, orange).
+a colour theme (purple, light pink, green, blue, light blue, teal, orange). Each theme tints
+the whole app with five shades of its colour (background, cards, borders, highlights, chart
+bars), or only the accents if you switch tinting off.
 
 The browser version is the current focus (prototype with demo data and simulated
 friends); everything is built so the Android app can plug in real data later.
