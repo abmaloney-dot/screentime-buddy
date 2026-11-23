@@ -5,7 +5,7 @@ those hours ("Meal time", "Commute", …), get tips based on them, and pick a **
 goal** to cut screen time by 3, 5 or 10 % vs. last week. Reaching it earns a
 **hypothetical discount coupon** (gym, groceries, Amazon). An opt-in **friends
 leaderboard** compares daily averages. A **Theme** tab sets light/dark/system mode and
-a colour theme (purple, light pink, green, blue, light blue, teal, orange). Each theme tints
+a colour theme (red, orange, yellow, green, teal, light blue, blue, purple, pink, light pink). Each theme tints
 the whole app with five shades of its colour (background, cards, borders, highlights, chart
 bars), or only the accents if you switch tinting off.
 

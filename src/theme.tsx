@@ -31,41 +31,58 @@ type Scheme = 'light' | 'dark';
  * look right and keep readable button text, which a formula doesn't guarantee
  * (pale accents like light pink and light blue need dark text on buttons).
  */
+// Listed in rainbow order; that's the order the Theme tab shows them in.
 export const ACCENTS = {
-  purple: {
-    label: 'Purple', hue: 240, sat: 60,
-    light: { primary: '#5B5BD6', onPrimary: '#FFFFFF' },
-    dark: { primary: '#8B8CF5', onPrimary: '#0F1117' },
+  red: {
+    label: 'Red', hue: 0, sat: 70,
+    light: { primary: '#E53935', onPrimary: '#FFFFFF' },
+    dark: { primary: '#FF6B6B', onPrimary: '#0F1117' },
   },
-  lightPink: {
-    label: 'Light pink', hue: 340, sat: 75,
-    light: { primary: '#F48FB1', onPrimary: '#3A0A1E' },
-    dark: { primary: '#F8A5C2', onPrimary: '#2A0A16' },
+  orange: {
+    label: 'Orange', hue: 24, sat: 80,
+    light: { primary: '#EA580C', onPrimary: '#FFFFFF' },
+    dark: { primary: '#FB923C', onPrimary: '#0F1117' },
+  },
+  yellow: {
+    // Yellow is too light for white text in either mode.
+    label: 'Yellow', hue: 45, sat: 90,
+    light: { primary: '#EAB308', onPrimary: '#3A2A00' },
+    dark: { primary: '#FACC15', onPrimary: '#2A1F00' },
   },
   green: {
     label: 'Green', hue: 145, sat: 45,
     light: { primary: '#2E9E5B', onPrimary: '#FFFFFF' },
     dark: { primary: '#5DD88F', onPrimary: '#0F1117' },
   },
-  blue: {
-    label: 'Blue', hue: 220, sat: 75,
-    light: { primary: '#2563EB', onPrimary: '#FFFFFF' },
-    dark: { primary: '#6EA0FF', onPrimary: '#0F1117' },
+  teal: {
+    label: 'Teal', hue: 174, sat: 60,
+    light: { primary: '#0D9488', onPrimary: '#FFFFFF' },
+    dark: { primary: '#2DD4BF', onPrimary: '#0F1117' },
   },
   lightBlue: {
     label: 'Light blue', hue: 199, sat: 85,
     light: { primary: '#38BDF8', onPrimary: '#062A3A' },
     dark: { primary: '#7DD3FC', onPrimary: '#062A3A' },
   },
-  teal: {
-    label: 'Teal', hue: 174, sat: 60,
-    light: { primary: '#0D9488', onPrimary: '#FFFFFF' },
-    dark: { primary: '#2DD4BF', onPrimary: '#0F1117' },
+  blue: {
+    label: 'Blue', hue: 220, sat: 75,
+    light: { primary: '#2563EB', onPrimary: '#FFFFFF' },
+    dark: { primary: '#6EA0FF', onPrimary: '#0F1117' },
   },
-  orange: {
-    label: 'Orange', hue: 24, sat: 80,
-    light: { primary: '#EA580C', onPrimary: '#FFFFFF' },
-    dark: { primary: '#FB923C', onPrimary: '#0F1117' },
+  purple: {
+    label: 'Purple', hue: 240, sat: 60,
+    light: { primary: '#5B5BD6', onPrimary: '#FFFFFF' },
+    dark: { primary: '#8B8CF5', onPrimary: '#0F1117' },
+  },
+  pink: {
+    label: 'Pink', hue: 330, sat: 70,
+    light: { primary: '#DB2777', onPrimary: '#FFFFFF' },
+    dark: { primary: '#F472B6', onPrimary: '#0F1117' },
+  },
+  lightPink: {
+    label: 'Light pink', hue: 340, sat: 75,
+    light: { primary: '#F48FB1', onPrimary: '#3A0A1E' },
+    dark: { primary: '#F8A5C2', onPrimary: '#2A0A16' },
   },
 } satisfies Record<string, { label: string; hue: number; sat: number; light: object; dark: object }>;
 
@@ -105,13 +122,14 @@ function buildPalette(id: AccentId, scheme: Scheme, tinted: boolean): Colors {
   const shades =
     scheme === 'light'
       ? {
-          background: hsl(h, s * 0.6, 95),
-          card: hsl(h, s * 0.5, 99),
-          border: hsl(h, s * 0.4, 87),
-          primarySoft: hsl(h, s * 0.8, 91),
-          bar: hsl(h, s * 0.7, 74),
+          // Strong enough to read as the theme's colour at a glance.
+          background: hsl(h, s * 0.9, 92),
+          card: hsl(h, s * 0.75, 97),
+          border: hsl(h, s * 0.6, 82),
+          primarySoft: hsl(h, s, 87),
+          bar: hsl(h, s * 0.85, 68),
           text: hsl(h, 25, 15),
-          muted: hsl(h, 12, 37), // keeps ≥ 4.5:1 (WCAG AA) on every light surface
+          muted: hsl(h, 14, 33), // keeps ≥ 4.5:1 (WCAG AA) on every light surface (lowest 5.4)
         }
       : {
           background: hsl(h, s * 0.35, 8),
