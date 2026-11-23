@@ -25,7 +25,9 @@ const TAG_TIPS: Record<TagId, { id: string; emoji: string; title: string; action
     id: 'no-phones-before-bed',
     emoji: '🛏️',
     title: 'No phones before bed',
-    action: 'Put the phone away 30 minutes before sleep and charge it outside the bedroom.',
+    action:
+      'Put the phone away 30 minutes before sleep and charge it outside the bedroom. ' +
+      'If you need to look at your screen in the evenings, make a habit of using a night light filter.',
   },
   fun: {
     id: 'move-instead-of-scroll',
