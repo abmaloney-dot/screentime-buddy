@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Pressable, StyleSheet, Text, View, type StyleProp, type ViewStyle } from 'react-native';
 
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing, useTheme } from '@/theme';
 
 export function Card({
   title,
@@ -12,6 +12,7 @@ export function Card({
   children: ReactNode;
   style?: StyleProp<ViewStyle>;
 }) {
+  const styles = useSharedStyles();
   return (
     <View style={[styles.card, style]}>
       {title ? <Text style={styles.cardTitle}>{title}</Text> : null}
@@ -21,6 +22,8 @@ export function Card({
 }
 
 export function ProgressBar({ value, max }: { value: number; max: number }) {
+  const styles = useSharedStyles();
+  const { colors } = useTheme();
   const ratio = max > 0 ? value / max : 0;
   const over = ratio > 1;
   return (
@@ -46,6 +49,7 @@ export function Button({
   variant?: 'primary' | 'ghost';
   disabled?: boolean;
 }) {
+  const styles = useSharedStyles();
   const ghost = variant === 'ghost';
   return (
     <Pressable
@@ -56,7 +60,7 @@ export function Button({
         ghost ? styles.buttonGhost : styles.buttonPrimary,
         (pressed || disabled) && { opacity: 0.6 },
       ]}>
-      <Text style={[styles.buttonText, ghost && { color: colors.primary }]}>{label}</Text>
+      <Text style={[styles.buttonText, ghost && styles.buttonGhostText]}>{label}</Text>
     </Pressable>
   );
 }
@@ -70,6 +74,7 @@ export function Segmented<T extends string | number>({
   value: T;
   onChange: (v: T) => void;
 }) {
+  const styles = useSharedStyles();
   return (
     <View style={styles.segmented}>
       {options.map((o) => {
@@ -87,31 +92,35 @@ export function Segmented<T extends string | number>({
   );
 }
 
-export const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.background },
-  content: { padding: spacing.lg, gap: spacing.lg },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: 16,
-    padding: spacing.lg,
-    gap: spacing.md,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  cardTitle: { fontSize: 13, fontWeight: '700', color: colors.muted, textTransform: 'uppercase' },
-  big: { fontSize: 36, fontWeight: '800', color: colors.text },
-  body: { fontSize: 15, color: colors.text },
-  muted: { fontSize: 13, color: colors.muted },
-  error: { fontSize: 14, color: colors.danger },
-  track: { height: 10, borderRadius: 5, backgroundColor: colors.border, overflow: 'hidden' },
-  fill: { height: '100%', borderRadius: 5 },
-  button: { paddingVertical: 12, paddingHorizontal: 18, borderRadius: 12, alignItems: 'center' },
-  buttonPrimary: { backgroundColor: colors.primary },
-  buttonGhost: { backgroundColor: colors.primarySoft },
-  buttonText: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  segmented: { flexDirection: 'row', backgroundColor: colors.border, borderRadius: 10, padding: 3 },
-  segment: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
-  segmentActive: { backgroundColor: colors.card },
-  segmentText: { color: colors.muted, fontWeight: '600' },
-  segmentTextActive: { color: colors.text },
-});
+/** Styles shared by every screen, rebuilt per theme: `const styles = useSharedStyles()`. */
+export const useSharedStyles = makeStyles((c) =>
+  StyleSheet.create({
+    screen: { flex: 1, backgroundColor: c.background },
+    content: { padding: spacing.lg, gap: spacing.lg },
+    card: {
+      backgroundColor: c.card,
+      borderRadius: 16,
+      padding: spacing.lg,
+      gap: spacing.md,
+      borderWidth: 1,
+      borderColor: c.border,
+    },
+    cardTitle: { fontSize: 13, fontWeight: '700', color: c.muted, textTransform: 'uppercase' },
+    big: { fontSize: 36, fontWeight: '800', color: c.text },
+    body: { fontSize: 15, color: c.text },
+    muted: { fontSize: 13, color: c.muted },
+    error: { fontSize: 14, color: c.danger },
+    track: { height: 10, borderRadius: 5, backgroundColor: c.border, overflow: 'hidden' },
+    fill: { height: '100%', borderRadius: 5 },
+    button: { paddingVertical: 12, paddingHorizontal: 18, borderRadius: 12, alignItems: 'center' },
+    buttonPrimary: { backgroundColor: c.primary },
+    buttonGhost: { backgroundColor: c.primarySoft },
+    buttonText: { color: c.onPrimary, fontWeight: '700', fontSize: 15 },
+    buttonGhostText: { color: c.primary },
+    segmented: { flexDirection: 'row', backgroundColor: c.border, borderRadius: 10, padding: 3 },
+    segment: { flex: 1, paddingVertical: 8, borderRadius: 8, alignItems: 'center' },
+    segmentActive: { backgroundColor: c.card },
+    segmentText: { color: c.muted, fontWeight: '600' },
+    segmentTextActive: { color: c.text },
+  }),
+);

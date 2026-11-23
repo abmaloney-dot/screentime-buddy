@@ -1,7 +1,7 @@
 import { useSQLiteContext } from 'expo-sqlite';
 import { ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 
-import { Card, styles } from '@/components/ui';
+import { Card, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { getSetting, setSetting } from '@/lib/db';
 import { friendsSource, SHARE_SETTING } from '@/lib/friends';
@@ -9,11 +9,14 @@ import { DAY_MS } from '@/lib/clock';
 import { getDayTotals, getWeekTotal } from '@/lib/days';
 import { addDays, formatMinutes, formatWeek, startOfWeek, today } from '@/lib/time';
 import { percentChange } from '@/lib/weekly';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing, useTheme } from '@/theme';
 
 type Row = { id: string; name: string; avgPerDay: number; changePct: number; isMe: boolean };
 
 export default function FriendsScreen() {
+  const styles = useSharedStyles();
+  const s = useStyles();
+  const { colors } = useTheme();
   const db = useSQLiteContext();
 
   const { data, reload } = useFocusedData('friends', async () => {
@@ -113,7 +116,8 @@ export default function FriendsScreen() {
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   toggleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   locked: { alignItems: 'center', gap: spacing.md, paddingTop: 48, paddingHorizontal: spacing.xl },
   row: {
@@ -124,6 +128,7 @@ const s = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     borderRadius: 10,
   },
-  me: { backgroundColor: colors.primarySoft },
-  rank: { width: 28, fontSize: 18, textAlign: 'center' },
-});
+  me: { backgroundColor: c.primarySoft },
+  rank: { width: 28, fontSize: 18, textAlign: 'center', color: c.muted },
+}),
+);

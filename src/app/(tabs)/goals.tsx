@@ -2,7 +2,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Button, Card, ProgressBar, Segmented, styles } from '@/components/ui';
+import { Button, Card, ProgressBar, Segmented, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import {
   CATEGORIES,
@@ -15,9 +15,12 @@ import {
 import { getSetting, getWeekResults, setSetting, setWeeklyGoal } from '@/lib/db';
 import { dayKey, formatMinutes, formatWeek } from '@/lib/time';
 import { getWeekProgress } from '@/lib/weekly';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing, useTheme } from '@/theme';
 
 export default function GoalsScreen() {
+  const styles = useSharedStyles();
+  const s = useStyles();
+  const { colors } = useTheme();
   const db = useSQLiteContext();
   const [draft, setDraft] = useState<TierId | null>(null);
 
@@ -139,6 +142,8 @@ export default function GoalsScreen() {
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
+  const styles = useSharedStyles();
+  const { colors } = useTheme();
   return (
     <View style={{ flex: 1, alignItems: 'center' }}>
       <Text style={{ fontSize: 22, fontWeight: '800', color: colors.text }}>{value}</Text>
@@ -147,7 +152,8 @@ function Stat({ label, value }: { label: string; value: string }) {
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   tier: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -155,11 +161,12 @@ const s = StyleSheet.create({
     padding: spacing.md,
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: colors.border,
+    borderColor: c.border,
   },
-  tierActive: { borderColor: colors.primary, backgroundColor: colors.primarySoft },
-  tierName: { fontSize: 16, fontWeight: '700', color: colors.text },
-  badge: { backgroundColor: colors.successSoft, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
-  badgeText: { color: colors.success, fontWeight: '800' },
+  tierActive: { borderColor: c.primary, backgroundColor: c.primarySoft },
+  tierName: { fontSize: 16, fontWeight: '700', color: c.text },
+  badge: { backgroundColor: c.successSoft, borderRadius: 8, paddingVertical: 4, paddingHorizontal: 8 },
+  badgeText: { color: c.success, fontWeight: '800' },
   stats: { flexDirection: 'row' },
-});
+}),
+);

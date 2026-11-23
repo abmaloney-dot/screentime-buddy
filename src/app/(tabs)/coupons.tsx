@@ -3,16 +3,19 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { CouponCard, couponState } from '@/components/CouponCard';
-import { Card, styles } from '@/components/ui';
+import { Card, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { findTier } from '@/lib/coupons';
 import { getCoupons, getWeekResults, setCouponUsed } from '@/lib/db';
 import { formatWeek, parseDayKey } from '@/lib/time';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing, useTheme } from '@/theme';
 
 const STATE_ORDER = { active: 0, used: 1, expired: 2 };
 
 export default function CouponsScreen() {
+  const styles = useSharedStyles();
+  const s = useStyles();
+  const { colors } = useTheme();
   const db = useSQLiteContext();
   const router = useRouter();
   const { data, reload } = useFocusedData('coupons', async () => {
@@ -73,7 +76,9 @@ export default function CouponsScreen() {
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   empty: { alignItems: 'center', justifyContent: 'center', gap: spacing.md, paddingHorizontal: spacing.xl },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, paddingVertical: spacing.xs },
-});
+}),
+);

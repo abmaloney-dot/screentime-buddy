@@ -2,9 +2,9 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, Text, View } from 'react-native';
 
 import { usageSource } from '@/lib/usage';
-import { colors, spacing } from '@/theme';
+import { spacing, useTheme } from '@/theme';
 
-import { Button, Card, styles } from './ui';
+import { Button, Card, useSharedStyles } from './ui';
 
 /**
  * Android's usage access is a "special" permission: there is no runtime
@@ -12,6 +12,8 @@ import { Button, Card, styles } from './ui';
  * app comes back to the foreground, i.e. after they return from Settings.
  */
 export function PermissionGate({ children }: { children: ReactNode }) {
+  const styles = useSharedStyles();
+  const { colors } = useTheme();
   const [granted, setGranted] = useState(() => usageSource.hasPermission());
 
   useEffect(() => {

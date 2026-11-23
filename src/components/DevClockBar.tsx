@@ -5,7 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { clock, DAY_MS, onClockChange, setClockOffset } from '@/lib/clock';
 import { deleteSimulatedFuture } from '@/lib/db';
 import { dayKey, startOfDay, startOfWeek } from '@/lib/time';
-import { colors } from '@/theme';
+import { makeStyles } from '@/theme';
 
 /**
  * Developer-only time travel, shown in every tab header in dev builds.
@@ -14,6 +14,7 @@ import { colors } from '@/theme';
  */
 export function DevClockBar() {
   const db = useSQLiteContext();
+  const s = useStyles();
   const [, rerender] = useState(0);
   useEffect(() => onClockChange(() => rerender((n) => n + 1)), []);
 
@@ -40,6 +41,7 @@ export function DevClockBar() {
 }
 
 function Pill({ label, onPress }: { label: string; onPress: () => void }) {
+  const s = useStyles();
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [s.pill, pressed && { opacity: 0.6 }]}>
       <Text style={s.pillText}>{label}</Text>
@@ -47,16 +49,18 @@ function Pill({ label, onPress }: { label: string; onPress: () => void }) {
   );
 }
 
-const s = StyleSheet.create({
-  bar: { flexDirection: 'row', alignItems: 'center', gap: 6, marginRight: 12 },
-  offset: { fontSize: 12, fontWeight: '700', color: colors.danger },
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
+  bar: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  offset: { fontSize: 12, fontWeight: '700', color: c.danger },
   pill: {
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 8,
     borderWidth: 1,
     borderStyle: 'dashed',
-    borderColor: colors.muted,
+    borderColor: c.muted,
   },
-  pillText: { fontSize: 12, fontWeight: '600', color: colors.muted },
-});
+  pillText: { fontSize: 12, fontWeight: '600', color: c.muted },
+  }),
+);

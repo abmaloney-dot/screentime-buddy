@@ -2,7 +2,7 @@ import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { TAGS, type TagId } from '@/lib/tags';
 import { formatHour, formatMinutes } from '@/lib/time';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing, useTheme } from '@/theme';
 
 export function TagPicker({
   hour,
@@ -17,6 +17,8 @@ export function TagPicker({
   onSelect: (tag: TagId | null) => void;
   onClose: () => void;
 }) {
+  const s = useStyles();
+  const { colors } = useTheme();
   return (
     <Modal visible={hour !== null} transparent animationType="slide" onRequestClose={onClose}>
       <Pressable style={s.backdrop} onPress={onClose} />
@@ -52,19 +54,21 @@ export function TagPicker({
   );
 }
 
-const s = StyleSheet.create({
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.3)' },
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
+  backdrop: { flex: 1, backgroundColor: c.backdrop },
   sheet: {
-    backgroundColor: colors.card,
+    backgroundColor: c.card,
     padding: spacing.xl,
     gap: spacing.md,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
   },
-  title: { fontSize: 18, fontWeight: '700', color: colors.text },
-  subtitle: { fontSize: 14, color: colors.muted },
+  title: { fontSize: 18, fontWeight: '700', color: c.text },
+  subtitle: { fontSize: 14, color: c.muted },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   chip: { borderWidth: 2, borderRadius: 20, paddingVertical: 8, paddingHorizontal: 14 },
-  chipText: { fontSize: 14, fontWeight: '600', color: colors.text },
+  chipText: { fontSize: 14, fontWeight: '600', color: c.text },
   clear: { alignSelf: 'center', padding: spacing.sm },
-});
+  }),
+);

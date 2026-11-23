@@ -1,7 +1,7 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { findTag, type TagId } from '@/lib/tags';
-import { colors } from '@/theme';
+import { makeStyles, useTheme } from '@/theme';
 
 const CHART_HEIGHT = 140;
 
@@ -17,6 +17,8 @@ export function HourlyChart({
   selectedHour?: number | null;
   onPressHour?: (hour: number) => void;
 }) {
+  const s = useStyles();
+  const { colors } = useTheme();
   return (
     <View>
       <View style={s.bars}>
@@ -52,11 +54,13 @@ export function HourlyChart({
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   bars: { flexDirection: 'row', alignItems: 'flex-end', height: CHART_HEIGHT, gap: 2 },
   slot: { flex: 1, height: '100%', justifyContent: 'flex-end' },
   bar: { borderTopLeftRadius: 3, borderTopRightRadius: 3 },
-  selected: { borderWidth: 2, borderColor: colors.text },
+  selected: { borderWidth: 2, borderColor: c.text },
   axis: { flexDirection: 'row', justifyContent: 'space-between', marginTop: 4 },
-  axisLabel: { fontSize: 11, color: colors.muted },
-});
+  axisLabel: { fontSize: 11, color: c.muted },
+  }),
+);

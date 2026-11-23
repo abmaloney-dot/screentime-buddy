@@ -6,14 +6,14 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { HourlyChart } from '@/components/HourlyChart';
 import { PermissionGate } from '@/components/PermissionGate';
 import { TagPicker } from '@/components/TagPicker';
-import { Card, ProgressBar, styles } from '@/components/ui';
+import { Card, ProgressBar, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { getTagsBetween, setHourTag } from '@/lib/db';
 import { TAGS, type TagId } from '@/lib/tags';
 import { addDays, dayKey, formatDay, formatMinutes, hourBoundaries, today } from '@/lib/time';
 import { usageSource } from '@/lib/usage';
 import { getWeekProgress } from '@/lib/weekly';
-import { colors, spacing } from '@/theme';
+import { spacing, useTheme } from '@/theme';
 
 // Android keeps roughly a week of detailed events.
 const OLDEST_OFFSET = -6;
@@ -27,6 +27,8 @@ export default function TodayScreen() {
 }
 
 function DayView() {
+  const styles = useSharedStyles();
+  const { colors } = useTheme();
   const db = useSQLiteContext();
   const [offset, setOffset] = useState(0);
   const [selectedHour, setSelectedHour] = useState<number | null>(null);

@@ -89,6 +89,15 @@ is averaged over the days that label was used). `friends.ts` defines `FriendsSou
 simulated friends for now; a real one needs a backend. The Friends screen loads friends' data
 only when `share_with_friends` is on, and ranks finished days only (on Monday: last week).
 
+**Theming: `src/theme.tsx`.** `ThemeProvider` (inside SQLiteProvider) picks a palette from
+mode (system/light/dark) × accent (`ACCENTS`: each has separate light and dark shades; pale
+accents use dark `onPrimary` text). Both choices live in `settings` and load in `onInit` to
+avoid a flash. Never import colours directly: module-level styles use
+`const useStyles = makeStyles((c) => StyleSheet.create({...}))`, shared ones
+`useSharedStyles()` from `components/ui.tsx`, inline colours `useTheme().colors`. Every
+`<Text>` style needs an explicit colour (unset = black, invisible in dark mode). The Theme tab
+and the header `ThemeToggle` edit the same state.
+
 **Data loading: `useFocusedData(key, load)`.** Every screen loads through this hook. It reloads
 on focus, on `key` change, on foreground and on clock jumps, and drops responses from older
 requests (rapid day switching). Use it instead of ad-hoc effects.
@@ -101,5 +110,9 @@ Path aliases: `@/*` → `src/*`, `@modules/*` → `modules/*`. Routes live in `s
 - `metro.config.js` adds `.wasm` assets and COEP/COOP headers. expo-sqlite runs as WebAssembly
   on web and needs both. The database lives in the browser's OPFS under `expo-sqlite/`.
 - Test week rollovers with the header's dev buttons rather than overriding `window.Date`.
+- Metro's watcher on this machine can miss edits made by scripts (seen after a bulk
+  rewrite): if the browser runs code that doesn't match the file, restart the preview server.
+- `git checkout` writes CRLF here (`core.autocrlf`): scripted multi-line find/replace must
+  normalise line endings first.
 - React Native Web's `Switch` is a hidden checkbox under a drawn track: when driving the
   browser, click the visible track's coordinates; clicking the checkbox element does nothing.

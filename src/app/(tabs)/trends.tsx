@@ -4,14 +4,14 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { DailyChart } from '@/components/DailyChart';
 import { PermissionGate } from '@/components/PermissionGate';
-import { Card, Segmented, styles } from '@/components/ui';
+import { Card, Segmented, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { getTagsBetween } from '@/lib/db';
 import { averageByHour, mostActiveHours, slopePerDay } from '@/lib/stats';
 import { addDays, dayKey, formatHour, formatMinutes, hourBoundaries, today as getToday } from '@/lib/time';
 import { usageSource } from '@/lib/usage';
 import { getWeekProgress } from '@/lib/weekly';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing, useTheme } from '@/theme';
 
 export default function TrendsScreen() {
   return (
@@ -22,6 +22,9 @@ export default function TrendsScreen() {
 }
 
 function Trends() {
+  const styles = useSharedStyles();
+  const s = useStyles();
+  const { colors } = useTheme();
   const db = useSQLiteContext();
   const [range, setRange] = useState<7 | 14>(7);
 
@@ -133,6 +136,8 @@ function Trends() {
 }
 
 function TrendBadge({ slope }: { slope: number }) {
+  const s = useStyles();
+  const { colors } = useTheme();
   // Under ±3 min/day is noise, not a trend.
   const [label, color, bg] =
     slope <= -3
@@ -147,10 +152,12 @@ function TrendBadge({ slope }: { slope: number }) {
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   heat: { flexDirection: 'row', gap: 2 },
   heatCell: { flex: 1, height: 28, borderRadius: 4 },
   heatAxis: { flexDirection: 'row', justifyContent: 'space-between' },
   row: { flexDirection: 'row', gap: spacing.sm },
   badge: { alignSelf: 'flex-start', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 10 },
-});
+}),
+);

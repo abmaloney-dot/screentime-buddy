@@ -3,13 +3,13 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { PermissionGate } from '@/components/PermissionGate';
-import { Button, Card, styles } from '@/components/ui';
+import { Button, Card, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { getTagsBetween } from '@/lib/db';
 import { buildTips, unlabelledBusyHours } from '@/lib/tips';
 import { addDays, dayKey, formatHour, hourBoundaries, today } from '@/lib/time';
 import { usageSource } from '@/lib/usage';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing } from '@/theme';
 
 const DAYS = 7;
 
@@ -22,6 +22,8 @@ export default function TipsScreen() {
 }
 
 function Tips() {
+  const styles = useSharedStyles();
+  const s = useStyles();
   const db = useSQLiteContext();
   const router = useRouter();
 
@@ -78,9 +80,11 @@ function Tips() {
   );
 }
 
-const s = StyleSheet.create({
-  top: { borderColor: colors.primary, borderWidth: 2 },
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
+  top: { borderColor: c.primary, borderWidth: 2 },
   head: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   emoji: { fontSize: 24 },
-  title: { fontSize: 17, fontWeight: '800', color: colors.text, flex: 1 },
-});
+  title: { fontSize: 17, fontWeight: '800', color: c.text, flex: 1 },
+}),
+);

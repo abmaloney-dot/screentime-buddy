@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { findCategory, findTier } from '@/lib/coupons';
 import type { Coupon } from '@/lib/db';
 import { dayKey, parseDayKey, today } from '@/lib/time';
-import { colors, spacing } from '@/theme';
+import { makeStyles, spacing } from '@/theme';
 
 import { Button } from './ui';
 
@@ -14,6 +14,7 @@ export function couponState(c: Coupon): 'active' | 'used' | 'expired' {
 
 /** A hypothetical discount coupon. Always labelled as a demo. */
 export function CouponCard({ coupon, onToggleUsed }: { coupon: Coupon; onToggleUsed?: () => void }) {
+  const s = useStyles();
   const category = findCategory(coupon.category);
   const tier = findTier(coupon.tier);
   const state = couponState(coupon);
@@ -41,21 +42,23 @@ export function CouponCard({ coupon, onToggleUsed }: { coupon: Coupon; onToggleU
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   card: {
-    backgroundColor: colors.card,
+    backgroundColor: c.card,
     borderRadius: 16,
     borderWidth: 2,
     borderStyle: 'dashed',
-    borderColor: colors.primary,
+    borderColor: c.primary,
     padding: spacing.lg,
     gap: spacing.md,
   },
   top: { flexDirection: 'row', gap: spacing.md, alignItems: 'center' },
   emoji: { fontSize: 32 },
-  offer: { fontSize: 17, fontWeight: '800', color: colors.text },
-  meta: { fontSize: 13, color: colors.muted, marginTop: 2 },
-  codeBox: { backgroundColor: colors.primarySoft, borderRadius: 10, paddingVertical: 10, alignItems: 'center' },
-  code: { fontSize: 18, fontWeight: '800', letterSpacing: 2, color: colors.primary, fontFamily: 'monospace' },
-  demo: { fontSize: 11, color: colors.muted, textAlign: 'center' },
-});
+  offer: { fontSize: 17, fontWeight: '800', color: c.text },
+  meta: { fontSize: 13, color: c.muted, marginTop: 2 },
+  codeBox: { backgroundColor: c.primarySoft, borderRadius: 10, paddingVertical: 10, alignItems: 'center' },
+  code: { fontSize: 18, fontWeight: '800', letterSpacing: 2, color: c.primary, fontFamily: 'monospace' },
+  demo: { fontSize: 11, color: c.muted, textAlign: 'center' },
+  }),
+);

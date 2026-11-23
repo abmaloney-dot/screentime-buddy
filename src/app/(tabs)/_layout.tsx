@@ -1,10 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Tabs } from 'expo-router';
 import type { ComponentProps } from 'react';
-import type { ColorValue } from 'react-native';
+import { View, type ColorValue } from 'react-native';
 
 import { DevClockBar } from '@/components/DevClockBar';
-import { colors } from '@/theme';
+import { ThemeToggle } from '@/components/ThemeToggle';
+import { useTheme } from '@/theme';
 
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
@@ -13,15 +14,29 @@ function TabIcon({ name, color, size }: { name: IconName; color: ColorValue; siz
   return <Ionicons name={name} color={typeof color === 'string' ? color : undefined} size={size} />;
 }
 
+function HeaderActions() {
+  return (
+    <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8, marginRight: 12 }}>
+      <DevClockBar />
+      <ThemeToggle />
+    </View>
+  );
+}
+
 export default function TabLayout() {
+  const { colors } = useTheme();
   return (
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
+        tabBarInactiveTintColor: colors.muted,
+        tabBarStyle: { backgroundColor: colors.card, borderTopColor: colors.border },
         tabBarLabelStyle: { fontSize: 10 },
         headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.text,
         headerShadowVisible: false,
-        headerRight: () => <DevClockBar />,
+        sceneStyle: { backgroundColor: colors.background },
+        headerRight: () => <HeaderActions />,
       }}>
       <Tabs.Screen
         name="index"
@@ -46,6 +61,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="friends"
         options={{ title: 'Friends', tabBarIcon: (p) => <TabIcon name="people-outline" {...p} /> }}
+      />
+      <Tabs.Screen
+        name="theme"
+        options={{ title: 'Theme', tabBarIcon: (p) => <TabIcon name="color-palette-outline" {...p} /> }}
       />
     </Tabs>
   );

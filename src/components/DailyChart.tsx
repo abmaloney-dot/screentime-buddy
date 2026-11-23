@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View } from 'react-native';
 
 import { formatMinutes } from '@/lib/time';
-import { colors } from '@/theme';
+import { makeStyles, useTheme } from '@/theme';
 
 const CHART_HEIGHT = 150;
 
@@ -13,6 +13,8 @@ export function DailyChart({
   days: { label: string; minutes: number }[];
   goal: number | null;
 }) {
+  const s = useStyles();
+  const { colors } = useTheme();
   const max = Math.max(60, goal ?? 0, ...days.map((d) => d.minutes)) * 1.1;
   const goalY = goal !== null ? (goal / max) * CHART_HEIGHT : null;
 
@@ -52,7 +54,8 @@ export function DailyChart({
   );
 }
 
-const s = StyleSheet.create({
+const useStyles = makeStyles((c) =>
+  StyleSheet.create({
   chart: { flexDirection: 'row', alignItems: 'flex-end', height: CHART_HEIGHT, gap: 4 },
   slot: { flex: 1, justifyContent: 'flex-end', height: '100%' },
   bar: { borderTopLeftRadius: 4, borderTopRightRadius: 4 },
@@ -62,10 +65,11 @@ const s = StyleSheet.create({
     right: 0,
     borderTopWidth: 1,
     borderStyle: 'dashed',
-    borderColor: colors.success,
+    borderColor: c.success,
     zIndex: 1,
   },
-  goalLabel: { position: 'absolute', right: 0, top: -16, fontSize: 11, color: colors.success },
+  goalLabel: { position: 'absolute', right: 0, top: -16, fontSize: 11, color: c.success },
   labels: { flexDirection: 'row', gap: 4, marginTop: 4 },
-  label: { flex: 1, fontSize: 10, color: colors.muted, textAlign: 'center' },
-});
+  label: { flex: 1, fontSize: 10, color: c.muted, textAlign: 'center' },
+  }),
+);

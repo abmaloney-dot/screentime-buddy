@@ -3,14 +3,16 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { ScrollView, Text, View } from 'react-native';
 
 import { CouponCard } from '@/components/CouponCard';
-import { Button, Card, styles } from '@/components/ui';
+import { Button, Card, useSharedStyles } from '@/components/ui';
 import { useFocusedData } from '@/hooks/useFocusedData';
 import { TIERS, findTier } from '@/lib/coupons';
 import { getCoupon, getWeekResult } from '@/lib/db';
 import { formatMinutes, formatWeek, parseDayKey } from '@/lib/time';
-import { colors, spacing } from '@/theme';
+import { spacing, useTheme } from '@/theme';
 
 export default function WeeklyResultModal() {
+  const styles = useSharedStyles();
+  const { colors } = useTheme();
   const { week } = useLocalSearchParams<{ week: string }>();
   const db = useSQLiteContext();
   const router = useRouter();
