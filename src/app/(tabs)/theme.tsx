@@ -1,7 +1,9 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
-import { Button, Card, ProgressBar, Segmented, useSharedStyles, ThemedSwitch } from '@/components/ui';
+import { PatternBackground } from '@/components/PatternBackground';
+import { Button, Card, ProgressBar, Segmented, ThemedSwitch, useSharedStyles } from '@/components/ui';
+import { BACKGROUNDS, STRENGTHS, type BackgroundId, type StrengthId } from '@/lib/backgrounds';
 import {
   ACCENTS,
   makeStyles,
@@ -14,6 +16,7 @@ import {
 } from '@/theme';
 
 const ACCENT_IDS = Object.keys(ACCENTS) as AccentId[];
+const BACKGROUND_IDS = Object.keys(BACKGROUNDS) as BackgroundId[];
 
 /** The shades shown in the preview strip, lightest surface first. */
 const SHADES: { key: keyof Colors; label: string }[] = [
@@ -28,7 +31,20 @@ const SHADES: { key: keyof Colors; label: string }[] = [
 export default function ThemeScreen() {
   const styles = useSharedStyles();
   const s = useStyles();
-  const { colors, scheme, preference, setPreference, accent, setAccent, tinted, setTinted } = useTheme();
+  const {
+    colors,
+    scheme,
+    preference,
+    setPreference,
+    accent,
+    setAccent,
+    tinted,
+    setTinted,
+    background,
+    setBackground,
+    strength,
+    setStrength,
+  } = useTheme();
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
@@ -93,6 +109,42 @@ export default function ThemeScreen() {
         </View>
       </Card>
 
+      <Card title="Background design">
+        <View style={s.grid}>
+          {BACKGROUND_IDS.map((id) => {
+            const active = id === background;
+            return (
+              <Pressable
+                key={id}
+                onPress={() => setBackground(id)}
+                accessibilityRole="radio"
+                accessibilityState={{ selected: active }}
+                accessibilityLabel={BACKGROUNDS[id].label}
+                style={[s.design, { borderColor: active ? colors.primary : colors.border }, active && s.optionActive]}>
+                {/* Each tile shows the design in the current theme and strength. */}
+                <View style={[s.designPreview, { backgroundColor: colors.background }]}>
+                  <PatternBackground design={id} colors={colors} opacity={STRENGTHS[strength].opacity} />
+                  {id === 'none' ? <Ionicons name="ban-outline" size={22} color={colors.muted} /> : null}
+                </View>
+                <Text style={[s.designLabel, active && { fontWeight: '700' }]} numberOfLines={1}>
+                  {BACKGROUNDS[id].label}
+                </Text>
+              </Pressable>
+            );
+          })}
+        </View>
+        {background !== 'none' ? (
+          <>
+            <Segmented<StrengthId>
+              options={(Object.keys(STRENGTHS) as StrengthId[]).map((k) => ({ value: k, label: STRENGTHS[k].label }))}
+              value={strength}
+              onChange={setStrength}
+            />
+            <Text style={styles.muted}>The design takes its colours from your colour theme above.</Text>
+          </>
+        ) : null}
+      </Card>
+
       <Card title="Preview">
         <View style={s.strip}>
           {SHADES.map(({ key, label }) => (
@@ -132,6 +184,9 @@ const useStyles = makeStyles((c) =>
     dots: { flexDirection: 'row', gap: 4 },
     dot: { width: 12, height: 12, borderRadius: 6, borderWidth: 1 },
     optionLabel: { fontSize: 13 },
+    design: { width: '31%', borderRadius: 12, borderWidth: 2, overflow: 'hidden' },
+    designPreview: { height: 72, alignItems: 'center', justifyContent: 'center', overflow: 'hidden' },
+    designLabel: { fontSize: 13, color: c.text, textAlign: 'center', paddingVertical: 6, backgroundColor: c.card },
     toggleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginTop: spacing.sm },
     strip: { flexDirection: 'row', gap: 6 },
     shade: { flex: 1, alignItems: 'center', gap: 4 },

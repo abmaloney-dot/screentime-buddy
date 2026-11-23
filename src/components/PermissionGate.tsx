@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 import { AppState, Text, View } from 'react-native';
 
 import { usageSource } from '@/lib/usage';
-import { spacing, useTheme } from '@/theme';
+import { spacing } from '@/theme';
 
 import { Button, Card, useSharedStyles } from './ui';
 
@@ -13,7 +13,6 @@ import { Button, Card, useSharedStyles } from './ui';
  */
 export function PermissionGate({ children }: { children: ReactNode }) {
   const styles = useSharedStyles();
-  const { colors } = useTheme();
   const [granted, setGranted] = useState(() => usageSource.hasPermission());
 
   useEffect(() => {
@@ -27,12 +26,7 @@ export function PermissionGate({ children }: { children: ReactNode }) {
     return (
       <>
         {usageSource.kind === 'demo' ? (
-          <View
-            style={{
-              paddingHorizontal: spacing.lg,
-              paddingTop: spacing.md,
-              backgroundColor: colors.background,
-            }}>
+          <View style={{ paddingHorizontal: spacing.lg, paddingTop: spacing.md }}>
             <Text style={styles.muted}>
               Demo data: real screen time needs the Android development build.
             </Text>

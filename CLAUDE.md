@@ -102,6 +102,16 @@ The choices live in `settings` and load in `onInit` to avoid a flash. Never impo
 `<Text>` style needs an explicit colour (unset = black, invisible in dark mode). The Theme tab
 and the header `ThemeToggle` edit the same state.
 
+**Background designs.** `src/lib/backgrounds.ts` lists them; each is one or three white alpha
+masks in `assets/backgrounds/`, tinted at runtime (`Image` `tintColor`; on web that becomes an
+SVG filter) with theme shades: one layer → `bar`, three tones → `primarySoft`/`bar`/`primary`.
+The masks were generated from the user's design screenshots (k-means on ink colour for the
+multi-tone ones); to add a design, make a white-on-transparent mask the same way. Every screen
+is wrapped by `ScreenBackdrop` via the navigators' `screenLayout` (opaque background + design);
+screens and scenes stay transparent. It must be per screen: navigators keep inactive screens
+rendered underneath, so one shared layer lets them show through. The root layout also passes
+a navigation theme with a transparent background, or React Navigation paints its default grey.
+
 **Data loading: `useFocusedData(key, load)`.** Every screen loads through this hook. It reloads
 on focus, on `key` change, on foreground and on clock jumps, and drops responses from older
 requests (rapid day switching). Use it instead of ad-hoc effects.

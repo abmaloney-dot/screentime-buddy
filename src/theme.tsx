@@ -3,6 +3,7 @@ import { useSQLiteContext } from 'expo-sqlite';
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
 
+import { BACKGROUNDS, STRENGTHS, type BackgroundId, type StrengthId } from '@/lib/backgrounds';
 import { getSetting, setSetting } from '@/lib/db';
 
 export type Colors = {
@@ -171,6 +172,8 @@ export type ThemePreference = 'system' | 'light' | 'dark';
 const PREFERENCE_KEY = 'theme';
 const ACCENT_KEY = 'accent';
 const TINT_KEY = 'tint';
+const BACKGROUND_KEY = 'background';
+const STRENGTH_KEY = 'background_strength';
 
 type Theme = {
   colors: Colors;
@@ -182,6 +185,11 @@ type Theme = {
   /** Whether backgrounds, cards and borders take the theme's hue too. */
   tinted: boolean;
   setTinted: (t: boolean) => void;
+  /** Background design drawn behind every screen, in the theme's colours. */
+  background: BackgroundId;
+  setBackground: (b: BackgroundId) => void;
+  strength: StrengthId;
+  setStrength: (s: StrengthId) => void;
 };
 
 const ThemeContext = createContext<Theme | null>(null);
@@ -191,12 +199,18 @@ const ThemeContext = createContext<Theme | null>(null);
 let initialPreference: ThemePreference = 'system';
 let initialAccent: AccentId = 'purple';
 let initialTinted = true;
+let initialBackground: BackgroundId = 'none';
+let initialStrength: StrengthId = 'medium';
 export async function loadThemePreference(db: SQLiteDatabase) {
   const saved = await getSetting(db, PREFERENCE_KEY);
   if (saved === 'light' || saved === 'dark' || saved === 'system') initialPreference = saved;
   const accent = await getSetting(db, ACCENT_KEY);
   if (accent && accent in ACCENTS) initialAccent = accent as AccentId;
   initialTinted = (await getSetting(db, TINT_KEY)) !== '0';
+  const background = await getSetting(db, BACKGROUND_KEY);
+  if (background && background in BACKGROUNDS) initialBackground = background as BackgroundId;
+  const strength = await getSetting(db, STRENGTH_KEY);
+  if (strength && strength in STRENGTHS) initialStrength = strength as StrengthId;
 }
 
 /** Must sit inside SQLiteProvider: the user's choices are saved in settings. */
@@ -206,6 +220,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   const [preference, setPreferenceState] = useState<ThemePreference>(initialPreference);
   const [accent, setAccentState] = useState<AccentId>(initialAccent);
   const [tinted, setTintedState] = useState(initialTinted);
+  const [background, setBackgroundState] = useState<BackgroundId>(initialBackground);
+  const [strength, setStrengthState] = useState<StrengthId>(initialStrength);
 
   const value = useMemo<Theme>(() => {
     const scheme: Scheme = preference === 'system' ? (system === 'dark' ? 'dark' : 'light') : preference;
@@ -227,8 +243,18 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         setTintedState(t);
         setSetting(db, TINT_KEY, t ? '1' : '0');
       },
+      background,
+      setBackground: (b) => {
+        setBackgroundState(b);
+        setSetting(db, BACKGROUND_KEY, b);
+      },
+      strength,
+      setStrength: (s) => {
+        setStrengthState(s);
+        setSetting(db, STRENGTH_KEY, s);
+      },
     };
-  }, [preference, accent, tinted, system, db]);
+  }, [preference, accent, tinted, background, strength, system, db]);
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }

@@ -1,9 +1,10 @@
-import { Stack, useRouter } from 'expo-router';
+import { DarkTheme, DefaultTheme, ThemeProvider as NavThemeProvider, Stack, useRouter } from 'expo-router';
 import { SQLiteProvider, useSQLiteContext, type SQLiteDatabase } from 'expo-sqlite';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import { AppState } from 'react-native';
+import { useEffect, useMemo } from 'react';
+import { AppState, View } from 'react-native';
 
+import { ScreenBackdrop } from '@/components/ScreenBackdrop';
 import { loadClock, onClockChange } from '@/lib/clock';
 import { DB_NAME, migrate } from '@/lib/db';
 import { evaluatePendingWeeks } from '@/lib/weekly';
@@ -26,21 +27,47 @@ export default function RootLayout() {
   );
 }
 
+/**
+ * Every screen is wrapped in ScreenBackdrop (theme background + design);
+ * screens themselves stay transparent so it shows through. Headers, the tab
+ * bar and cards stay solid, so text on them is crisp.
+ */
 function ThemedStack() {
   const { colors, scheme } = useTheme();
+  // The navigators' own theme: without it they paint React Navigation's
+  // default grey (#F2F2F2) behind screens, whatever the app theme is.
+  const navTheme = useMemo(() => {
+    const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
+    return {
+      ...base,
+      colors: {
+        ...base.colors,
+        background: 'transparent',
+        card: colors.card,
+        text: colors.text,
+        border: colors.border,
+        primary: colors.primary,
+        notification: colors.danger,
+      },
+    };
+  }, [colors, scheme]);
+
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.text,
-          contentStyle: { backgroundColor: colors.background },
-        }}>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="reward/[week]" options={{ presentation: 'modal', title: 'Weekly result' }} />
-      </Stack>
-    </>
+      <NavThemeProvider value={navTheme}>
+        <Stack
+          screenLayout={({ children }) => <ScreenBackdrop>{children}</ScreenBackdrop>}
+          screenOptions={{
+            headerStyle: { backgroundColor: colors.background },
+            headerTintColor: colors.text,
+            contentStyle: { backgroundColor: 'transparent' },
+          }}>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen name="reward/[week]" options={{ presentation: 'modal', title: 'Weekly result' }} />
+        </Stack>
+      </NavThemeProvider>
+    </View>
   );
 }
 

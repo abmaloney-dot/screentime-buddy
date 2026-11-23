@@ -4,6 +4,7 @@ import type { ComponentProps } from 'react';
 import { View, type ColorValue } from 'react-native';
 
 import { DevClockBar } from '@/components/DevClockBar';
+import { ScreenBackdrop } from '@/components/ScreenBackdrop';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { useTheme } from '@/theme';
 
@@ -27,6 +28,7 @@ export default function TabLayout() {
   const { colors } = useTheme();
   return (
     <Tabs
+      screenLayout={({ children }) => <ScreenBackdrop>{children}</ScreenBackdrop>}
       screenOptions={{
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.muted,
@@ -35,7 +37,7 @@ export default function TabLayout() {
         headerStyle: { backgroundColor: colors.background },
         headerTintColor: colors.text,
         headerShadowVisible: false,
-        sceneStyle: { backgroundColor: colors.background },
+        sceneStyle: { backgroundColor: 'transparent' }, // ScreenBackdrop draws background + design
         headerRight: () => <HeaderActions />,
       }}>
       <Tabs.Screen

@@ -115,7 +115,8 @@ export function ThemedSwitch({ value, onValueChange }: { value: boolean; onValue
 /** Styles shared by every screen, rebuilt per theme: `const styles = useSharedStyles()`. */
 export const useSharedStyles = makeStyles((c) =>
   StyleSheet.create({
-    screen: { flex: 1, backgroundColor: c.background },
+    // Transparent: ScreenBackdrop draws the background colour and design.
+    screen: { flex: 1 },
     content: { padding: spacing.lg, gap: spacing.lg },
     card: {
       backgroundColor: c.card,
